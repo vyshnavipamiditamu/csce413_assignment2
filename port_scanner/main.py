@@ -47,56 +47,51 @@ def scan_port(target, port, timeout=1.0):
 
 
 def scan_range(target, start_port, end_port):
-    """
-    Scan a range of ports on the target host
-
-    Args:
-        target (str): IP address or hostname to scan
-        start_port (int): Starting port number
-        end_port (int): Ending port number
-
-    Returns:
-        list: List of open ports
-    """
     open_ports = []
 
+    # Print the correct ports being scanned
     print(f"[*] Scanning {target} from port {start_port} to {end_port}")
-    print(f"[*] This may take a while...")
-
-    # TODO: Implement the scanning logic
-    # Hint: Loop through port range and call scan_port()
-    # Hint: Consider using threading for better performance
-
+    
+    # Use the range provided by the user
     for port in range(start_port, end_port + 1):
-        # TODO: Scan this port
-        # TODO: If open, add to open_ports list
-        # TODO: Print progress (optional)
-        pass  # Remove this and implement
+        # We will implement the actual 'scan_port' logic in the next step
+        if scan_port(target, port):
+            open_ports.append(port)
+            print(f"    [+] Port {port} is open")
 
     return open_ports
 
 
 def main():
-    """Main function"""
-    # TODO: Parse command-line arguments
-    # TODO: Validate inputs
-    # TODO: Call scan_range()
-    # TODO: Display results
-
-    # Example usage (you should improve this):
+    """Main function to handle command-line arguments"""
+    
+    # Check if at least the target IP is provided
     if len(sys.argv) < 2:
-        print("Usage: python3 port_scanner_template.py <target>")
-        print("Example: python3 port_scanner_template.py 172.20.0.10")
+        print("Usage: python3 main.py <target_ip> [start_port] [end_port]")
+        print("Example: python3 main.py 172.20.0.10 1 10000")
         sys.exit(1)
 
+    # 1. Get the target IP
     target = sys.argv[1]
-    start_port = 1
-    end_port = 1024  # Scan first 1024 ports by default
 
-    print(f"[*] Starting port scan on {target}")
+    # 2. Get the start port (default to 1 if not provided)
+    if len(sys.argv) > 2:
+        start_port = int(sys.argv[2])
+    else:
+        start_port = 1
 
+    # 3. Get the end port (default to 1024 if not provided)
+    if len(sys.argv) > 3:
+        end_port = int(sys.argv[3])
+    else:
+        end_port = 1024
+
+    print(f"[*] Starting port scan on {target} from port {start_port} to {end_port}")
+
+    # Call the scanning function with the correct range
     open_ports = scan_range(target, start_port, end_port)
 
+    # Display results
     print(f"\n[+] Scan complete!")
     print(f"[+] Found {len(open_ports)} open ports:")
     for port in open_ports:
