@@ -49,15 +49,7 @@ def scan_port(target, port, timeout=1.0):
 def scan_range(target, start_port, end_port):
     open_ports = []
 
-    # Print the correct ports being scanned
     print(f"[*] Scanning {target} from port {start_port} to {end_port}")
-    
-    # Use the range provided by the user
-    for port in range(start_port, end_port + 1):
-        # We will implement the actual 'scan_port' logic in the next step
-        if scan_port(target, port):
-            open_ports.append(port)
-            print(f"    [+] Port {port} is open")
 
     return open_ports
 
