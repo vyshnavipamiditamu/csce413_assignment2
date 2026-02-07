@@ -21,28 +21,24 @@ import socket
 import sys
 
 
-def scan_port(target, port, timeout=1.0):
-    """
-    Scan a single port on the target host
-
-    Args:
-        target (str): IP address or hostname to scan
-        port (int): Port number to scan
-        timeout (float): Connection timeout in seconds
-
-    Returns:
-        bool: True if port is open, False otherwise
-    """
+def scan_port(target, port):
+    """Scan a single port using the timeout clue."""
     try:
-        # TODO: Create a socket
-        # TODO: Set timeout
-        # TODO: Try to connect to target:port
-        # TODO: Close the socket
-        # TODO: Return True if connection successful
-
-        pass  # Remove this and implement
-
-    except (socket.timeout, ConnectionRefusedError, OSError):
+        # Create the socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        
+        # Apply Clue: Set timeout to 1 second (per the tips)
+        sock.settimeout(1.0)
+        
+        # Try to connect
+        result = sock.connect_ex((target, port))
+        
+        # Close immediately
+        sock.close()
+        
+        # Return True if the port is open (result 0)
+        return result == 0
+    except:
         return False
 
 
