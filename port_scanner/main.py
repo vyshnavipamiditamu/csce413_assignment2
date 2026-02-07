@@ -53,18 +53,16 @@ def scan_range(target, start_port, end_port, threads=100):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python3 main.py <target> [start_port] [end_port] [threads]")
-        print("Example: python3 main.py 172.20.0.10 1 10000 200")
+        print("Usage: python3 main.py <target> [start] [end] [threads]")
         sys.exit(1)
 
     target = sys.argv[1]
+    # Use arguments if provided, otherwise use defaults
     start_port = int(sys.argv[2]) if len(sys.argv) > 2 else 1
     end_port = int(sys.argv[3]) if len(sys.argv) > 3 else 1024
     threads = int(sys.argv[4]) if len(sys.argv) > 4 else 100
 
-    print(f"\n{'-'*50}\nStarting scan on {target}\n{'-'*50}")
     open_ports = scan_range(target, start_port, end_port, threads)
-    
     print(f"\n[+] Scan complete! Found {len(open_ports)} open ports.")
 
 if __name__ == "__main__":
