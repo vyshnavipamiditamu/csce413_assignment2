@@ -1,17 +1,13 @@
-#!/usr/bin/env bash
+#!/bin/bash
+# demo.sh updated to use official SSH commands
+TARGET_IP=$1
 
-set -euo pipefail
+echo "[1/3] Testing SSH BEFORE knocking (Should fail)..."
+ssh -o ConnectTimeout=3 root@$TARGET_IP -p 2222
 
-TARGET_IP=${1:-172.20.0.40}
-SEQUENCE=${2:-"1234,5678,9012"}
-PROTECTED_PORT=${3:-2222}
+echo "[2/3] Performing knock sequence..."
+python3 knock_client.py $TARGET_IP
 
-echo "[1/3] Attempting protected port before knocking"
-nc -z -v "$TARGET_IP" "$PROTECTED_PORT" || true
-
-echo "[2/3] Sending knock sequence: $SEQUENCE"
-python3 knock_client.py --target "$TARGET_IP" --sequence "$SEQUENCE" --check
-
-echo "[3/3] Attempting protected port after knocking"
-nc -z -v "$TARGET_IP" "$PROTECTED_PORT" || true
-
+echo "[3/3] Testing SSH AFTER knocking (Should prompt for password)..."
+echo "Note: Use password 'password123' if prompted."
+ssh -o ConnectTimeout=5 root@$TARGET_IP -p 2222

@@ -1,31 +1,29 @@
-#!/usr/bin/env python3
-"""Starter template for the honeypot assignment."""
+import socket
+from logger import log_attempt
 
-import logging
-import os
-import time
-
-LOG_PATH = "/app/logs/honeypot.log"
-
-
-def setup_logging():
-    os.makedirs("/app/logs", exist_ok=True)
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        handlers=[logging.FileHandler(LOG_PATH), logging.StreamHandler()],
-    )
-
-
-def run_honeypot():
-    logger = logging.getLogger("Honeypot")
-    logger.info("Honeypot starter template running.")
-    logger.info("TODO: Implement protocol simulation, logging, and alerting.")
+def start_trap():
+    # Requirement: Simulate a real service (SSH Banner)
+    BANNER = b"SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.5\r\n"
+    
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server.bind(('0.0.0.0', 22))
+    server.listen(5)
+    
+    print("[+] SSH Honeypot is active on port 22...")
 
     while True:
-        time.sleep(60)
-
+        client, addr = server.accept()
+        ip, port = addr
+        client.send(BANNER) # Be convincing
+        
+        try:
+            # Capture the raw SSH connection data
+            data = client.recv(1024).decode('utf-8', errors='ignore')
+            log_attempt(ip, port, "admin", data.strip())
+            client.send(b"Access denied\n")
+        finally:
+            client.close()
 
 if __name__ == "__main__":
-    setup_logging()
-    run_honeypot()
+    start_trap()

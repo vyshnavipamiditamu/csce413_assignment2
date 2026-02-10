@@ -1,5 +1,17 @@
-"""Logging helpers for the honeypot."""
+import logging
+import os
 
+# Wire logging to the required logs directory
+LOG_FILE = "/app/logs/honeypot.log"
 
-def create_logger():
-    raise NotImplementedError("Implement logging setup for your honeypot")
+logging.basicConfig(
+    filename=LOG_FILE,
+    level=logging.INFO,
+    format='%(asctime)s - %(message)s'
+)
+
+def log_attempt(ip, port, user, password):
+    # Requirement: Log IP, Port, and Authentication attempts
+    entry = f"INTRUSION DETECTED | Source: {ip}:{port} | User: {user} | Pass: {password}"
+    logging.info(entry)
+    print(f"[*] {entry}")
