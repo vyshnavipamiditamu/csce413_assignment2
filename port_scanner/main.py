@@ -42,6 +42,7 @@ def main():
         print("Usage: python3 main.py <target_ip> [start_port] [end_port]")
         sys.exit(1)
 
+    # 1. Get the target IP
     target = sys.argv[1]
     start_port = int(sys.argv[2]) if len(sys.argv) > 2 else 1
     end_port = int(sys.argv[3]) if len(sys.argv) > 3 else 1024
@@ -50,6 +51,15 @@ def main():
     start_time = time.time()
     print(f"[*] Starting port scan on {target} at {time.strftime('%H:%M:%S')}")
 
+    # 3. Get the end port (default to 1024 if not provided)
+    if len(sys.argv) > 3:
+        end_port = int(sys.argv[3])
+    else:
+        end_port = 1024
+
+    print(f"[*] Starting port scan on {target} from port {start_port} to {end_port}")
+
+    # Call the scanning function with the correct range
     open_ports = scan_range(target, start_port, end_port)
 
     end_time = time.time()
