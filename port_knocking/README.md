@@ -1,22 +1,18 @@
-## Port Knocking Starter Template
+# Fix 1: Port Knocking Implementation
 
-This directory is a starter template for the port knocking portion of the assignment.
+## Design Decisions
+- **Protected Service**: SSH (Port 2222).
+- **Knock Sequence**: A sequence of three ports (e.g., 7000, 8000, 9000) must be hit in order to open the firewall.
+- **Security Logic**: The system remains closed by default to prevent port scanning and unauthorized access.
 
-### What you need to implement
-- Pick a protected service/port (default is 2222).
-- Define a knock sequence (e.g., 1234, 5678, 9012).
-- Implement a server that listens for knocks and validates the sequence.
-- Open the protected port only after a valid sequence.
-- Add timing constraints and reset on incorrect sequences.
-- Implement a client to send the knock sequence.
+## Implementation Details
+- **Server**: `knock_server.py` monitors connection attempts and dynamically updates iptables rules upon receiving a valid sequence.
+- **Client**: `knock_client.py` automates the sequence of connection attempts to the target host.
 
-### Getting started
-1. Implement your server logic in `knock_server.py`.
-2. Implement your client logic in `knock_client.py`.
-3. Update `demo.sh` to demonstrate your flow.
-4. Run from the repo root with `docker compose up port_knocking`.
+## Security Analysis
+- **Strengths**: Significantly reduces the attack surface by making the SSH port "invisible" to standard scanners.
+- **Limitations**: Vulnerable to replay attacks if an attacker is sniffing the network traffic.
 
-### Example usage
-```bash
-python3 knock_client.py --target 172.20.0.40 --sequence 1234,5678,9012
-```
+## Testing
+1. Run `python3 knock_client.py --target <IP> --sequence 7000,8000,9000`.
+2. Connect via `ssh user@<IP> -p 2222`.
