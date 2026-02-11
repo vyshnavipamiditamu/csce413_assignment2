@@ -1,16 +1,20 @@
-## Honeypot Starter Template
+# Fix 2: SSH Honeypot Implementation
 
-This directory is a starter template for the honeypot portion of the assignment.
+## Overview
+This implementation features a custom-built SSH honeypot designed to detect and log unauthorized access attempts. It acts as a decoy service to monitor attacker behavior and gather threat intelligence.
 
-### What you need to implement
-- Choose a protocol (SSH, HTTP, or multi-protocol).
-- Simulate a convincing service banner and responses.
-- Log connection metadata, authentication attempts, and attacker actions.
-- Store logs under `logs/` and include an `analysis.md` summary.
-- Update `honeypot.py` and `logger.py` (and add modules as needed) to implement the honeypot.
+## Design Decisions
+- **Port**: The honeypot listens on port 2222, masquerading as a standard SSH service.
+- **Logging Mechanism**: Every connection attempt, including the source IP, timestamp, and provided credentials, is captured and logged to `analysis.md`.
+- **Response Strategy**: The honeypot is programmed to reject all authentication attempts after logging them, ensuring the attacker never gains actual shell access to the host.
 
-### Getting started
-1. Implement your honeypot logic in `honeypot.py`.
-2. Wire logging in `logger.py` and record results in `logs/`.
-3. Summarize your findings in `analysis.md`.
-4. Run from the repo root with `docker-compose up honeypot`.
+## Files
+- `honeypot.py`: The Python script using `socket` and `paramiko` to emulate the SSH handshake.
+- `analysis.md`: A live forensic log where captured intrusion data is stored for review.
+- `Dockerfile`: Containerizes the honeypot for easy deployment and isolation.
+
+## Captured Attack Analysis
+As documented in `analysis.md`, the honeypot successfully captured an intrusion attempt:
+- **Timestamp**: 2026-02-10 05:30:31
+- **Source IP**: 172.17.0.1
+- **Observed Behavior**: Brute-force attempt using the username 'admin'.
