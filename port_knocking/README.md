@@ -1,18 +1,25 @@
-# Fix 1: Port Knocking Implementation
+Readme file:
+# Part 3: Port Knocking Implementation (Option C)
 
-## Design Decisions
-- **Protected Service**: SSH (Port 2222).
-- **Knock Sequence**: A sequence of three ports (e.g., 7000, 8000, 9000) must be hit in order to open the firewall.
-- **Security Logic**: The system remains closed by default to prevent port scanning and unauthorized access.
+## Overview
+This implementation uses a stateless, kernel-level port knocking mechanism via the Linux `iptables` **recent** module. 
 
 ## Implementation Details
-- **Server**: `knock_server.py` monitors connection attempts and dynamically updates iptables rules upon receiving a valid sequence.
-- **Client**: `knock_client.py` automates the sequence of connection attempts to the target host.
+- **Protected Service**: OpenSSH server running on port 2222.
+- **Knock Sequence**: TCP attempts to ports 1234 -> 5678 -> 9012.
+- **Mechanism**: 
+  - The firewall starts by rejecting all traffic to port 2222.
+  - As a client hits each port in the sequence, the `recent` module tracks the source IP and promotes it through several stages (STAGE1, STAGE2).
+  - Upon completing the final knock, the IP is added to a `PASSED` list.
+  - The firewall allows port 2222 access ONLY to IPs in the `PASSED` list for a 60-second window.
 
-## Security Analysis
-- **Strengths**: Significantly reduces the attack surface by making the SSH port "invisible" to standard scanners.
-- **Limitations**: Vulnerable to replay attacks if an attacker is sniffing the network traffic.
+## Files
+- `Dockerfile`: Configures the Ubuntu environment and the complex iptables logic.
+- `knock_client.py`: A Python script that performs the TCP connections to the sequence ports.
+- `demo.sh`: A shell script that demonstrates the "Before", "Knock", and "After" states.
 
 ## Testing
-1. Run `python3 knock_client.py --target <IP> --sequence 7000,8000,9000`.
-2. Connect via `ssh user@<IP> -p 2222`.
+Run the following command within the directory:
+```bash
+./demo.sh <container_ip>
+
